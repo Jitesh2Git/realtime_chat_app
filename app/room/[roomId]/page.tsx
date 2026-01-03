@@ -93,8 +93,16 @@ const Room = () => {
       }
 
       if (event === "chat.destroy") {
-        router.push("/?destoryed=true");
+        router.push("/?destroyed=true");
       }
+    },
+  });
+
+  const { mutate: destoryRoom, isPending: isDestroying } = useMutation({
+    mutationFn: async () => {
+      await client.room.delete(null, { query: { roomId } });
+
+      setInput("");
     },
   });
 
@@ -149,12 +157,16 @@ const Room = () => {
         </div>
 
         <button
+          disabled={isDestroying}
+          onClick={() => {
+            destoryRoom();
+          }}
           className="text-xs bg-zinc-800 hover:bg-red-600 px-3 py-1.5 
         rounded text-zinc-400 hover:text-white font-bold transition-all 
         group flex items-center gap-2 disabled:opacity-50 cursor-pointer"
         >
           <span className="group-hover:animate-pulse">💣</span>
-          DESTROY NOW
+          {isDestroying ? "Destroying" : "DESTROY NOW"}
         </button>
       </header>
 
